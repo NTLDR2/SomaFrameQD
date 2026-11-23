@@ -1,0 +1,42 @@
+<Project Sdk="MSTest.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>SomaFrameQD.Tests</RootNamespace>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <UseWPF>true</UseWPF>
+    <UseSTASynchronizationContext>true</UseSTASynchronizationContext>
+    <IsPackable>false</IsPackable>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SomaFrameQD.Demo\SomaFrameQD.Demo.csproj" />
+    <ProjectReference Include="..\SomaFrameQD.Modules.CodeCompiler\SomaFrameQD.Modules.CodeCompiler.csproj" />
+    <ProjectReference Include="..\SomaFrameQD.Modules.CodeEditor\SomaFrameQD.Modules.CodeEditor.csproj" />
+    <ProjectReference Include="..\SomaFrameQD.Modules.ErrorList\SomaFrameQD.Modules.ErrorList.csproj" />
+    <ProjectReference Include="..\SomaFrameQD.Modules.GraphEditor\SomaFrameQD.Modules.GraphEditor.csproj" />
+    <ProjectReference Include="..\SomaFrameQD.Modules.Inspector\SomaFrameQD.Modules.Inspector.csproj" />
+    <ProjectReference Include="..\SomaFrameQD.Modules.Output\SomaFrameQD.Modules.Output.csproj" />
+    <ProjectReference Include="..\SomaFrameQD.Modules.PropertyGrid\SomaFrameQD.Modules.PropertyGrid.csproj" />
+    <ProjectReference Include="..\SomaFrameQD\SomaFrameQD.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestData\AvalonDock460\CompleteLayout.xml"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Update="TestData\AvalonDock4741\ApplicationState.bin"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Update="TestData\AvalonDock4741\README.md"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Update="TestData\AvalonDock501\ApplicationState.bin"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Update="TestData\AvalonDock501\README.md"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

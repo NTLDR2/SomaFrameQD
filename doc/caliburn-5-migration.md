@@ -1,27 +1,28 @@
 # Caliburn Micro 5 migration
 
-Gemini's Caliburn Micro 5 package line targets `net48` and
-`net10.0-windows`. Applications that require the previous `net462`, net6, or
-net7 assets must remain on an earlier Gemini package line.
+SomaFrameQD's Caliburn Micro 5 package line targets `.NET Framework 4.8`
+(`net48`) exclusively. Applications that require previous `net462`, `net6`,
+`net7`, or `net10.0-windows` assets must remain on an earlier SomaFrameQD
+package revision.
 
 Caliburn.Micro 5.0.258 does not publish a native net6 or net7 WPF Platform
 asset group. NuGet can select its net462 Platform fallback for those targets,
 but reports `NU1701`; the Core package's netstandard2.0 asset does not replace
-the WPF Platform assembly. Gemini therefore does not publish new supported
+the WPF Platform assembly. SomaFrameQD therefore does not publish new supported
 net6/net7 targets on that warning-bearing fallback.
 
-The `net48` Gemini asset uses Caliburn.Micro's compatible .NET Framework
+The `net48` SomaFrameQD asset uses Caliburn.Micro's compatible .NET Framework
 Platform asset. Building that lane requires the .NET Framework 4.8 targeting
 pack, and running it requires .NET Framework 4.8. Retarget and rebuild
 Framework applications and extensions before adopting this package line;
-retaining an older runtime while loading the new Gemini assembly is not a
+retaining an older runtime while loading the new SomaFrameQD assembly is not a
 supported migration path.
 
 ## Package and extension compatibility
 
 The package family uses Caliburn.Micro 5.0.258. Extensions should reference the
 same released Caliburn package family and must be rebuilt before loading into
-this Gemini line.
+this SomaFrameQD line.
 
 Caliburn 5 changes the inherited `IActivate.Activated` event from
 `EventHandler<ActivationEventArgs>` to
@@ -36,7 +37,7 @@ viewModel.Activated += async (sender, args) =>
 ```
 
 An extension compiled against the Caliburn 4 event accessor is not considered
-binary compatible merely because Gemini still provides a .NET Framework
+binary compatible merely because SomaFrameQD still provides a .NET Framework
 asset. Rebuild and test extensions against the new `net48` package before
 deployment.
 
@@ -54,15 +55,15 @@ upgrade path without rewriting earlier guidance.
 ### AvalonDock 4.60.0 to 4.74.1
 
 This migration replaces the coherent AvalonDock engine and VS2013 theme pair
-with version 4.74.1. The `net48` and `net10.0-windows` Gemini packages resolve
+with version 4.74.1. The `net48` and `net10.0-windows` SomaFrameQD packages resolve
 the matching native assets instead of a compatible older framework group. The
 classic `DockingManager`, XML serializer entry point, and Light/Dark/Blue
 resource URIs remain in use; this transition does not cover AvalonDock 5.
 
 AvalonDock's assembly version changes from 4.60.0.0 to 4.74.1.0. Rebuild and
 test external controls or extensions that reference AvalonDock directly rather
-than assuming binary compatibility from a successful Gemini source build.
-Preserve the complete old Gemini state file and its matching application,
+than assuming binary compatibility from a successful SomaFrameQD source build.
+Preserve the complete old SomaFrameQD state file and its matching application,
 module, extension, and dependency binaries during rollout. AvalonDock XML is
 only the trailing section of that state file and is not a complete rollback
 artifact by itself.
@@ -70,24 +71,33 @@ artifact by itself.
 ### AvalonDock 4.74.1 to 5.0.1
 
 This migration replaces the AvalonDock 4 package pair with the coherent 5.0.1
-package family. Gemini directly references the VS2013 theme and XML serializer
+package family. SomaFrameQD directly references the VS2013 theme and XML serializer
 packages. Their transitive graph supplies the engine, Core, and VS theme
 assemblies. The `net48` graph also resolves `System.Text.Json` 10.0.12, while
 the `net10.0-windows` graph uses the runtime's JSON implementation.
 
 AvalonDock 5 moves `XmlLayoutSerializer` to `AvalonDock.Serializer.Xml` and
 replaces the old VS2013 theme resource URIs with generated dictionaries.
-Gemini bridges its built-in Light, Dark, and Blue themes to those generated
-dictionaries before merging Gemini's own URI resources, so Gemini overrides
+SomaFrameQD bridges its built-in Light, Dark, and Blue themes to those generated
+dictionaries before merging SomaFrameQD's own URI resources, so SomaFrameQD overrides
 remain authoritative. The public URI-based `ITheme` contract is unchanged;
 third-party themes continue to load only the resource URIs they declare.
 
 External controls and extensions that reference AvalonDock directly must be
 rebuilt against assembly version 5.0.1.0. Rollback requires reinstalling the
-complete 4.74.1 Gemini package, module, extension, and AvalonDock dependency
+complete 4.74.1 SomaFrameQD package, module, extension, and AvalonDock dependency
 family together with a preserved 4.74.1 complete-state file. A state file
 written by the AvalonDock 5 application is not claimed to be readable by the
 4.74.1 application.
+
+### Consolidation to .NET Framework 4.8 (`net48`) only
+
+This transition removes `net10.0-windows` multi-targeting across `SomaFrameQDWpf`,
+all seven `SomaFrameQD.Modules.*` packages, `SomaFrameQD.Demo`, `SomaFrameQD.Tests`,
+and `Caliburn5PackageHost`, consolidating the `0.9.0` package family on
+`.NET Framework 4.8` (`net48`). Every published `.nupkg` and `.snupkg` archive
+now emits only `lib/net48` assets and a single `.NETFramework4.8` dependency
+group validated by `eng/package-contract.json` and `eng/validate-artifacts.ps1`.
 
 ## Asynchronous shell and startup readiness
 
@@ -100,7 +110,7 @@ queued transitions from running. The shell evaluates a tool guard once, closes
 the tool without unregistering it, and preserves a vetoed tool as visible and
 active.
 
-Gemini tools are registered by the shell rather than parented by a Caliburn
+SomaFrameQD tools are registered by the shell rather than parented by a Caliburn
 conductor. `Tool.TryCloseAsync` therefore routes through the shell-owned close
 operation, which awaits the guard once and updates visibility and selection
 only after successful deactivation. The tool remains registered for reopening.
@@ -212,7 +222,8 @@ being converted into fallback instances.
 
 ## Release policy
 
-This package family starts the Gemini 1.1 beta line. Raising the Framework
+The `SomaFrameQD` package family is reset to version `0.9.0` (while
+`SomaFrameQD.Demo` is versioned independently at `0.1.0`). Raising the Framework
 floor to .NET Framework 4.8, removing net6/net7, and changing an inherited
-public lifecycle event are breaking package-contract changes. The previous
-1.0 beta four-target family remains the rollback path.
+public lifecycle event are breaking package-contract changes from the legacy
+upstream 1.0 beta four-target family, which remains the historical rollback path.

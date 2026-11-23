@@ -97,7 +97,7 @@
 
 ### Major Changes
 
-* The Output and PropertyGrid modules are now separate projects, and separate NuGet packages. Gemini itself
+* The Output and PropertyGrid modules are now separate projects, and separate NuGet packages. SomaFrameQD itself
   now depends only on AvalonDock and Caliburn.Micro.
 
 ### Resolved Issues

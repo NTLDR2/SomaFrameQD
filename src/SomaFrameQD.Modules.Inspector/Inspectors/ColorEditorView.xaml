@@ -1,0 +1,29 @@
+<UserControl x:Class="SomaFrameQD.Modules.Inspector.Inspectors.ColorEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:p="clr-namespace:SomaFrameQD.Modules.Inspector.Properties"
+             xmlns:SomaFrameQD="http://schemas.timjones.io/SomaFrameQD"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:local="clr-namespace:SomaFrameQD.Modules.Inspector.Controls"
+             mc:Ignorable="d">
+    <StackPanel Orientation="Horizontal">
+        <toolkit:ColorPicker SelectedColor="{Binding Value}"
+                             UsingAlphaChannel="{Binding UsingAlphaChannel}"
+                             HorizontalAlignment="Left"
+                             Height="23" Width="70"
+                             StandardColorsHeader="{SomaFrameQD:Translate p:Resources.ColorEditorStandardColors}"
+                             StandardTabHeader="{SomaFrameQD:Translate p:Resources.ColorEditorStandard}"
+                             RecentColorsHeader="{SomaFrameQD:Translate p:Resources.ColorEditorRecentColors}"
+                             AvailableColorsHeader="{SomaFrameQD:Translate p:Resources.ColorEditorAvailableColors}"
+                             AdvancedTabHeader="{SomaFrameQD:Translate p:Resources.ColorEditorAdvanced}"
+                             cal:Message.Attach="[Event Closed] = [Action Closed]; [Event Opened] = [Action Opened]" />
+        <local:ScreenColorPicker x:Name="ScreenColorPicker" Margin="3 0 0 0"
+                                 PickingStarted="OnScreenColorPickerPickingStarted"
+                                 PickingCancelled="OnScreenColorPickerPickingCancelled"
+								 ColorHovered="OnScreenColorPickerColorHovered"
+								 ColorPicked="OnScreenColorPickerColorPicked" />
+    </StackPanel>
+</UserControl>

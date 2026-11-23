@@ -4,7 +4,7 @@
       "nuspec": ".NETFramework4.8",
       "asset": "net48",
       "build": "net48",
-      "lockFileTarget": "net48",
+      "lockFileTarget": ".NETFramework,Version=v4.8",
       "resolvedDependencies": {
         "System.Text.Json": "10.0.12"
       },
@@ -17,22 +17,6 @@
         "Dirkster.AvalonDock.Themes.VS2013": "lib/net48/AvalonDock.Themes.VS2013.dll",
         "DotNetProjects.Extended.Wpf.Toolkit": "lib/net40/DotNetProjects.Wpf.Extended.Toolkit.dll",
         "System.Text.Json": "lib/net462/System.Text.Json.dll"
-      }
-    },
-    {
-      "nuspec": "net10.0-windows7.0",
-      "asset": "net10.0-windows7.0",
-      "build": "net10.0-windows",
-      "lockFileTarget": "net10.0-windows",
-      "resolvedDependencies": {},
-      "resolvedAssets": {
-        "AvalonEdit": "lib/net8.0-windows7.0/ICSharpCode.AvalonEdit.dll",
-        "Dirkster.AvalonDock": "lib/net10.0-windows7.0/AvalonDock.dll",
-        "Dirkster.AvalonDock.Core": "lib/netstandard2.0/AvalonDock.Core.dll",
-        "Dirkster.AvalonDock.Serializer.Xml": "lib/netstandard2.0/AvalonDock.Serializer.Xml.dll",
-        "Dirkster.AvalonDock.Themes.VS": "lib/net10.0-windows7.0/AvalonDock.Themes.VS.dll",
-        "Dirkster.AvalonDock.Themes.VS2013": "lib/net10.0-windows7.0/AvalonDock.Themes.VS2013.dll",
-        "DotNetProjects.Extended.Wpf.Toolkit": "lib/net8.0-windows7.0/DotNetProjects.Wpf.Extended.Toolkit.dll"
       }
     }
   ],
@@ -54,82 +38,76 @@
   ],
   "packages": [
     {
-      "id": "GeminiWpf",
-      "assembly": "Gemini",
+      "id": "SomaFrameQDWpf",
+      "assembly": "SomaFrameQD",
       "internalDependencies": [],
       "externalDependencies": {
         "Caliburn.Micro": "5.0.258",
         "Dirkster.AvalonDock.Serializer.Xml": "5.0.1",
         "Dirkster.AvalonDock.Themes.VS2013": "5.0.1",
         "DotNetProjects.Extended.Wpf.Toolkit": "5.0.129",
-        "MahApps.Metro": "2.4.11",
-        "System.ComponentModel.Composition": "6.0.0"
+        "MahApps.Metro": "2.4.11"
       }
     },
     {
-      "id": "Gemini.Modules.CodeCompiler",
-      "assembly": "Gemini.Modules.CodeCompiler",
+      "id": "SomaFrameQD.Modules.CodeCompiler",
+      "assembly": "SomaFrameQD.Modules.CodeCompiler",
       "internalDependencies": [
-        "Gemini.Modules.ErrorList",
-        "Gemini.Modules.Output",
-        "GeminiWpf"
+        "SomaFrameQD.Modules.ErrorList",
+        "SomaFrameQD.Modules.Output",
+        "SomaFrameQDWpf"
       ],
       "externalDependencies": {
         "Microsoft.CodeAnalysis.CSharp": "3.4.0"
       }
     },
     {
-      "id": "Gemini.Modules.CodeEditor",
-      "assembly": "Gemini.Modules.CodeEditor",
+      "id": "SomaFrameQD.Modules.CodeEditor",
+      "assembly": "SomaFrameQD.Modules.CodeEditor",
       "internalDependencies": [
-        "GeminiWpf"
+        "SomaFrameQDWpf"
       ],
       "externalDependencies": {
         "AvalonEdit": "6.3.1.120"
       }
     },
     {
-      "id": "Gemini.Modules.ErrorList",
-      "assembly": "Gemini.Modules.ErrorList",
+      "id": "SomaFrameQD.Modules.ErrorList",
+      "assembly": "SomaFrameQD.Modules.ErrorList",
       "internalDependencies": [
-        "GeminiWpf"
+        "SomaFrameQDWpf"
       ],
       "externalDependencies": {}
     },
     {
-      "id": "Gemini.Modules.GraphEditor",
-      "assembly": "Gemini.Modules.GraphEditor",
+      "id": "SomaFrameQD.Modules.GraphEditor",
+      "assembly": "SomaFrameQD.Modules.GraphEditor",
       "internalDependencies": [
-        "GeminiWpf"
+        "SomaFrameQDWpf"
       ],
       "externalDependencies": {}
     },
     {
-      "id": "Gemini.Modules.Inspector",
-      "assembly": "Gemini.Modules.Inspector",
+      "id": "SomaFrameQD.Modules.Inspector",
+      "assembly": "SomaFrameQD.Modules.Inspector",
       "internalDependencies": [
-        "GeminiWpf"
-      ],
-      "externalDependencies": {
-        "System.Drawing.Common": "6.0.0"
-      },
-      "externalDependenciesByFramework": {
-        "net10.0-windows7.0": {}
-      }
-    },
-    {
-      "id": "Gemini.Modules.Output",
-      "assembly": "Gemini.Modules.Output",
-      "internalDependencies": [
-        "GeminiWpf"
+        "SomaFrameQDWpf"
       ],
       "externalDependencies": {}
     },
     {
-      "id": "Gemini.Modules.PropertyGrid",
-      "assembly": "Gemini.Modules.PropertyGrid",
+      "id": "SomaFrameQD.Modules.Output",
+      "assembly": "SomaFrameQD.Modules.Output",
       "internalDependencies": [
-        "GeminiWpf"
+        "SomaFrameQDWpf"
+      ],
+      "externalDependencies": {}
+    },
+    {
+      "id": "SomaFrameQD.Modules.PropertyGrid",
+      "assembly": "SomaFrameQD.Modules.PropertyGrid",
+      "internalDependencies": [
+        "SomaFrameQDWpf"
       ],
       "externalDependencies": {}
     }

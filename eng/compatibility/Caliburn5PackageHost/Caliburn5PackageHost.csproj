@@ -2,15 +2,19 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net48;net10.0-windows</TargetFrameworks>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <UseWPF>true</UseWPF>
     <IsPackable>false</IsPackable>
-    <GeminiPackageVersion Condition="'$(GeminiPackageVersion)' == ''">0.0.0-local</GeminiPackageVersion>
+    <SomaFrameQDPackageVersion Condition="'$(SomaFrameQDPackageVersion)' == ''">0.0.0-local</SomaFrameQDPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gemini.Modules.CodeEditor" Version="$(GeminiPackageVersion)" />
-    <PackageReference Include="GeminiWpf" Version="$(GeminiPackageVersion)" />
+    <PackageReference Include="SomaFrameQD.Modules.CodeEditor" Version="$(SomaFrameQDPackageVersion)" />
+    <PackageReference Include="SomaFrameQDWpf" Version="$(SomaFrameQDPackageVersion)" />
   </ItemGroup>
 
 </Project>

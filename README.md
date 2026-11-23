@@ -1,38 +1,106 @@
-# Gemini [![Build status](https://github.com/tgjones/gemini/workflows/CI/badge.svg)](https://github.com/tgjones/gemini/actions) [![NuGet](https://img.shields.io/nuget/v/GeminiWpf.svg)](https://www.nuget.org/packages/GeminiWpf/) [![Join the chat at https://gitter.im/tgjones/gemini](https://badges.gitter.im/tgjones/gemini.svg)](https://gitter.im/tgjones/gemini?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# SomaFrameQD `v0.9.0` [![Build status](https://github.com/NTLDR2/SomaFrameQD/actions/workflows/ci.yml/badge.svg)](https://github.com/NTLDR2/SomaFrameQD/actions) [![NuGet](https://img.shields.io/nuget/v/SomaFrameQDWpf.svg)](https://www.nuget.org/packages/SomaFrameQDWpf/)
 
-Gemini is a WPF framework designed specifically for building IDE-like applications. It builds on some excellent libraries:
+**SomaFrameQD** is a modular, Visual Studio-style **WPF IDE and workbench application framework** engineered specifically for **`.NET Framework 4.8` (`net48`)** and **64-bit (`x64`) Windows—from Windows 7 SP1 `x64` through Windows 8.1, Windows 10, and Windows 11 `x64`**.
 
-* [AvalonDock](https://github.com/Dirkster99/AvalonDock) (specifically Dirkster99's fork, because it supports .NET Core)
+* **Authors & Attribution:** **Dmitriy Novikov, Tim Jones, and contributors** *(modernized, 64-bit `.NET Framework 4.8`-optimized fork of Tim Jones's [Gemini](https://github.com/tgjones/gemini) framework)*
+* **License:** Dual-licensed under **Apache License 2.0** or **Microsoft Public License (Ms-PL)** ([`LICENCE.txt`](LICENCE.txt))
+* **Release Line:** **`0.9.0`** (`SomaFrameQDWpf` + 7 `SomaFrameQD.Modules.*` NuGet packages) · **`0.1.0` Alpha** (`SomaFrameQD.Demo` showcase)
+
+---
+
+## Mission: Practicality & Broad Compatibility Over Runtime Churn
+
+Downloading a lightweight Windows desktop tool shouldn't greet users or IT administrators with an unexpected *"You must install a new `.NET` Desktop Runtime to run this application"* roadblock—or force developers into shipping 150+ MB self-contained bundles every year.
+
+**SomaFrameQD** prioritizes **compatibility, stability, and instant startup** instead of chasing bleeding-edge runtime churn:
+* **Zero Runtime-Installer Friction on Modern Windows:** `.NET Framework 4.8` ships built into every Windows 10 (`1903+`) and Windows 11 PC worldwide, running directly against pre-NGen'd OS assemblies.
+* **15-Year 64-Bit Windows Reach:** Runs a single unified `net48` binary family across **Windows 7 SP1 `x64`**, **Windows 8.1 `x64`**, **Windows 10 `x64`**, and **Windows 11 `x64`** (including Classic/Basic/RDP `1px` non-DWM borders, DWM Aero/Snap Layouts, High-DPI System scaling, DirectX `ps_2_0` hardware + CPU SSE2 shader fallback, and OS-adaptive TLS 1.2 / 1.3).
+* **Modernized Stack & Rigorous Verification:** Built on **Caliburn.Micro `5.0.258`** (async lifecycles & coroutines), **Dirkster.AvalonDock `5.0.1`**, **MahApps.Metro `2.4.11`**, **AvalonEdit `6.3.1.120`**, **Extended WPF Toolkit `5.0.129`**, native `.NET 4.8` GAC **MEF (`System.ComponentModel.Composition`)**, **562 frozen VS2013 theme brushes** (**Light**, **Blue**, and **Dark**), and **`174` passing `[net48|x64]` STA characterization & optimization tests**.
+
+---
+
+## Up-to-Date `v0.9.0` Documentation & Quick Links
+
+* **Inaugural Release Notes (`v0.9.0`):** [`releasenotes/20261123_RELEASE_NOTES_v0.9.0.md`](releasenotes/20261123_RELEASE_NOTES_v0.9.0.md)
+* **Granular Technical Changelog:** [`changelogs/20261123_CHANGELOG.md`](changelogs/20261123_CHANGELOG.md)
+* **Complete Post-`net48` Architectural Reference (`00`–`09`):** [`doc_after-net48/00_INDEX.md`](doc_after-net48/00_INDEX.md)
+* **Win7 SP1 → Win11 `x64` Deployment & QA Guide:** [`doc/net48-win7-to-win11-x64-deployment-guide.md`](doc/net48-win7-to-win11-x64-deployment-guide.md)
+* **Caliburn.Micro 5 & AvalonDock 5 Migration Guide:** [`doc/caliburn-5-migration.md`](doc/caliburn-5-migration.md)
+* **Repository & MEF Contract Navigation Map:** [`REPO_MAP.md`](REPO_MAP.md)
+
+### Quick-Start Notes (`SomaFrameQD` `0.9.0` vs. Legacy Snippets Below)
+
+1. **XAML Namespace URI (`.io`, not `.tw`):**
+   ```xml
+   <Application x:Class="MyWorkbench.App"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:SomaFrameQD="http://schemas.timjones.io/SomaFrameQD">
+       <Application.Resources>
+           <ResourceDictionary>
+               <ResourceDictionary.MergedDictionaries>
+                   <ResourceDictionary>
+                       <SomaFrameQD:AppBootstrapper x:Key="bootstrapper" />
+                   </ResourceDictionary>
+               </ResourceDictionary.MergedDictionaries>
+           </ResourceDictionary>
+       </Application.Resources>
+   </Application>
+   ```
+2. **Asynchronous `IShell` Lifecycle (Caliburn.Micro 5):** Use `await Shell.OpenDocumentAsync(doc)`, `await Shell.CloseDocumentAsync(doc)`, `await Shell.ShowToolAsync<TTool>()`, and `await Shell.CloseToolAsync(tool)`, and mark multi-instance `IDocument` / `ISettingsEditor` MEF exports with `[PartCreationPolicy(CreationPolicy.NonShared)]`.
+3. **8 Built-In Core Modules (`SomaFrameQDWpf`) + 7 Optional NuGet Modules:** Core includes `MainWindow`, `Shell`, `MainMenu`, `ToolBars`, `StatusBar`, `Toolbox`, `UndoRedo`, and **`Settings`** (`Tools -> Options`), plus optional `SomaFrameQD.Modules.{CodeCompiler,CodeEditor,ErrorList,GraphEditor,Inspector,Output,PropertyGrid}`.
+4. **Build, Test & Validate From Source (`.NET SDK 8.0.400`):**
+   ```powershell
+   dotnet restore src\SomaFrameQD.sln --configfile src\NuGet.config
+   dotnet build src\SomaFrameQD.sln --configuration Release --no-restore
+   dotnet test src\SomaFrameQD.Tests\SomaFrameQD.Tests.csproj --configuration Release --framework net48 --no-build --no-restore
+   dotnet pack src\SomaFrameQD.sln --configuration Release --no-build --no-restore --output build\packages
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\eng\validate-artifacts.ps1
+   ```
+
+---
+
+> [!NOTE]
+> **Original Upstream *Gemini* Documentation Archive (Preserved Below):**  
+> The original documentation authored by Tim Jones and contributors is preserved below for conceptual walkthroughs and visual module previews. Where historical snippets below show legacy `.tw` XAML URIs, synchronous `OpenDocument`/`ShowTool` methods, 7 built-in modules, or Roslyn default-`AppDomain` assembly unloading, use the **`SomaFrameQD v0.9.0`** conventions above and [`doc_after-net48/00_INDEX.md`](doc_after-net48/00_INDEX.md).
+
+---
+
+# SomaFrameQD (Original *Gemini* Overview & Module Walkthrough)
+
+SomaFrameQD is a WPF framework designed specifically for building IDE-like applications. It builds on some excellent libraries:
+
+* [AvalonDock](https://github.com/Dirkster99/AvalonDock) (Dirkster.AvalonDock 5.0.1)
 * [Caliburn Micro](https://github.com/Caliburn-Micro/Caliburn.Micro)
 
-Gemini ships with two themes: a Light theme and a Blue theme. There is also an in-development Dark theme.
+SomaFrameQD ships with two themes: a Light theme and a Blue theme. There is also an in-development Dark theme.
 
-![Screenshot - Light theme](https://raw.github.com/tgjones/gemini/master/doc/gemini-everything-light.png)
+![Screenshot - Light theme](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-everything-light.png)
 
-![Screenshot - Blue theme](https://raw.github.com/tgjones/gemini/master/doc/gemini-everything-blue.png)
+![Screenshot - Blue theme](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-everything-blue.png)
 
 ## Getting started
 
 If you are creating a new WPF application, follow these steps:
 
-* Install the [Gemini](http://nuget.org/packages/GeminiWpf/) NuGet package.
+* Install the [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/) NuGet package.
 * Delete `MainWindow.xaml` - you don't need it.
 * Open `App.xaml` and delete the `StartupUri="MainWindow.xaml"` attribute.
-* Add `xmlns:gemini="http://schemas.timjones.tw/gemini"` to `App.xaml`.
-* Add `<gemini:AppBootstrapper x:Key="bootstrapper" />` to a `ResourceDictionary` within `<Application.Resources>`.
+* Add `xmlns:SomaFrameQD="http://schemas.timjones.tw/SomaFrameQD"` to `App.xaml`.
+* Add `<SomaFrameQD:AppBootstrapper x:Key="bootstrapper" />` to a `ResourceDictionary` within `<Application.Resources>`.
 
 So the whole `App.xaml` should look something like this:
 
 ```xml
-<Application x:Class="Gemini.Demo.App"
+<Application x:Class="SomaFrameQD.Demo.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-             xmlns:gemini="http://schemas.timjones.tw/gemini">
+             xmlns:SomaFrameQD="http://schemas.timjones.tw/SomaFrameQD">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
-                    <gemini:AppBootstrapper x:Key="bootstrapper" />
+                    <SomaFrameQD:AppBootstrapper x:Key="bootstrapper" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -42,33 +110,34 @@ So the whole `App.xaml` should look something like this:
 
 Now hit F5 and see a very empty application!
 
-By far the easiest way to get started with Gemini is to use the various NuGet packages.
-First, install the base Gemini package (note that the package ID is `GeminiWpf`, to
+By far the easiest way to get started with SomaFrameQD is to use the various NuGet packages.
+First, install the base SomaFrameQD package (note that the package ID is `SomaFrameQDWpf`, to
 distinguish it from another NuGet package with the same name):
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 Then add any other modules you are interested in (note that some modules have dependencies
 on other modules, but this is taken care of by the NuGet package dependency system):
 
-* [Gemini.Modules.CodeCompiler](http://nuget.org/packages/Gemini.Modules.CodeCompiler/)
-* [Gemini.Modules.CodeEditor](http://nuget.org/packages/Gemini.Modules.CodeEditor/)
-* [Gemini.Modules.ErrorList](http://nuget.org/packages/Gemini.Modules.ErrorList/)
-* [Gemini.Modules.GraphEditor](http://nuget.org/packages/Gemini.Modules.GraphEditor/)
-* [Gemini.Modules.Inspector](http://nuget.org/packages/Gemini.Modules.Inspector/)
-* [Gemini.Modules.Output](http://nuget.org/packages/Gemini.Modules.Output/)
-* [Gemini.Modules.PropertyGrid](http://nuget.org/packages/Gemini.Modules.PropertyGrid/)
+* [SomaFrameQD.Modules.CodeCompiler](http://nuget.org/packages/SomaFrameQD.Modules.CodeCompiler/)
+* [SomaFrameQD.Modules.CodeEditor](http://nuget.org/packages/SomaFrameQD.Modules.CodeEditor/)
+* [SomaFrameQD.Modules.ErrorList](http://nuget.org/packages/SomaFrameQD.Modules.ErrorList/)
+* [SomaFrameQD.Modules.GraphEditor](http://nuget.org/packages/SomaFrameQD.Modules.GraphEditor/)
+* [SomaFrameQD.Modules.Inspector](http://nuget.org/packages/SomaFrameQD.Modules.Inspector/)
+* [SomaFrameQD.Modules.Output](http://nuget.org/packages/SomaFrameQD.Modules.Output/)
+* [SomaFrameQD.Modules.PropertyGrid](http://nuget.org/packages/SomaFrameQD.Modules.PropertyGrid/)
 
 ## Continuous builds
 
-GitHub Actions builds every push and pull request for the `net48` and
-`net10.0-windows` targets. Successful runs provide the validated NuGet and
-symbol packages as a downloadable workflow artifact. The project files and
+GitHub Actions builds, tests, packs, and validates every push and pull request
+exclusively for the `.NET Framework 4.8` (`net48`) target. Successful runs
+provide the validated NuGet and symbol packages as a downloadable workflow
+artifact. The project files and
 [`eng/package-contract.json`](eng/package-contract.json) are the authoritative
 dependency and asset inventory; CI rejects packages that drift from that
-contract. Net6/net7 remain available from the legacy package line. Publication
-remains restricted to approved upstream releases. See
-[the CI workflow](.github/workflows/ci.yml) for the exact build and release
+contract. Earlier multi-target assets remain available only from historical
+package lines. Publication remains restricted to approved upstream releases.
+See [the CI workflow](.github/workflows/ci.yml) for the exact build and release
 contract.
 
 Applications and extensions moving from the previous package line or the
@@ -77,7 +146,7 @@ the [Caliburn Micro 5 migration notes](doc/caliburn-5-migration.md).
 
 ## What does it do?
 
-Gemini allows you to build your WPF application by composing separate modules. This provides a nice
+SomaFrameQD allows you to build your WPF application by composing separate modules. This provides a nice
 way of separating out the code for each part of your application. For example, here is a very simple
 module:
 
@@ -228,17 +297,17 @@ public class PropertyGridViewModel : Tool, IPropertyGrid
 ```
 
 For more details on creating documents and tools, look at the 
-[demo program](https://github.com/tgjones/gemini/tree/master/src/Gemini.Demo)
+[demo program](https://github.com/NTLDR2/SomaFrameQD/tree/master/src/SomaFrameQD.Demo)
 and the source code for the built-in modules.
 
 ### Commands
 
-Commands are one of the core concepts in Gemini. Commands help you to avoid duplicating code
+Commands are one of the core concepts in SomaFrameQD. Commands help you to avoid duplicating code
 by letting you define command handlers in a single place, regardless of whether the command
 is invoked through a menu item, toolbar item, or other trigger.
-Gemini's commands are conceptually similar to WPF commands, but they are more powerful.
+SomaFrameQD's commands are conceptually similar to WPF commands, but they are more powerful.
 
-First, create a command definition. Here's Gemini [command definition for opening files](https://github.com/tgjones/gemini/blob/master/src/Gemini/Modules/Shell/Commands/OpenFileCommandDefinition.cs):
+First, create a command definition. Here's SomaFrameQD [command definition for opening files](https://github.com/NTLDR2/SomaFrameQD/blob/master/src/SomaFrameQD/Modules/Shell/Commands/OpenFileCommandDefinition.cs):
 
 ``` csharp
 [CommandDefinition]
@@ -263,7 +332,7 @@ public class OpenFileCommandDefinition : CommandDefinition
 
 	public override Uri IconSource
 	{
-		get { return new Uri("pack://application:,,,/Gemini;component/Resources/Icons/Open.png"); }
+		get { return new Uri("pack://application:,,,/SomaFrameQD;component/Resources/Icons/Open.png"); }
 	}
 	
 	[Export]
@@ -324,7 +393,7 @@ To find out how to bind commands to menus or toolbars, see the "MainMenu" and "T
 
 ## What modules are built-in?
 
-Gemini itself is built out of seven core modules:
+SomaFrameQD itself is built out of seven core modules:
 
 * MainWindow
 * Shell
@@ -334,8 +403,8 @@ Gemini itself is built out of seven core modules:
 * Toolbox
 * UndoRedo
 
-Several more modules ship with Gemini, and are available as 
-[NuGet packages](http://nuget.org/packages?q=Gemini.Modules) as described above:
+Several more modules ship with SomaFrameQD, and are available as 
+[NuGet packages](http://nuget.org/packages?q=SomaFrameQD.Modules) as described above:
 
 * CodeCompiler
 * CodeEditor
@@ -360,7 +429,7 @@ The main window module:
 
 #### NuGet package
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 #### Dependencies
 
@@ -387,7 +456,7 @@ public interface IMainWindow
 
 ### Shell module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-shell.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-shell.png)
 
 The shell module:
 
@@ -401,7 +470,7 @@ The shell module:
 
 #### NuGet package
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 #### Dependencies
 
@@ -410,7 +479,7 @@ The shell module:
 #### Usage
 
 The `IShell` interface exposes a number of useful properties and methods. It is the main way
-to control Gemini's behaviour.
+to control SomaFrameQD's behaviour.
 
 ```csharp
 public interface IShell
@@ -441,13 +510,13 @@ public interface IShell
 
 ### MainMenu module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-mainmenu.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-mainmenu.png)
 
 Adds a main menu to the top of the window.
 
 #### NuGet package
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 #### Dependencies
 
@@ -480,18 +549,18 @@ To remove an existing menu item (such as a built-in menu item that you don't wan
 
 ``` csharp
 [Export]
-public static readonly ExcludeMenuItemDefinition ExcludeOpenMenuItem = new ExcludeMenuItemDefinition(Gemini.Modules.Shell.MenuDefinitions.FileOpenMenuItem);
+public static readonly ExcludeMenuItemDefinition ExcludeOpenMenuItem = new ExcludeMenuItemDefinition(SomaFrameQD.Modules.Shell.MenuDefinitions.FileOpenMenuItem);
 
 [Export]
-public static readonly ExcludeMenuItemGroupDefinition ExcludeWindowMenuItemGroup = new ExcludeMenuItemGroupDefinition(Gemini.Modules.MainMenu.MenuDefinitions.ViewToolsMenuGroup);
+public static readonly ExcludeMenuItemGroupDefinition ExcludeWindowMenuItemGroup = new ExcludeMenuItemGroupDefinition(SomaFrameQD.Modules.MainMenu.MenuDefinitions.ViewToolsMenuGroup);
 
 [Export]
-public static readonly ExcludeMenuDefinition ExcludeWindowMenuDefinition = new ExcludeMenuDefinition(Gemini.Modules.MainMenu.MenuDefinitions.WindowMenu);
+public static readonly ExcludeMenuDefinition ExcludeWindowMenuDefinition = new ExcludeMenuDefinition(SomaFrameQD.Modules.MainMenu.MenuDefinitions.WindowMenu);
 ```
 
 ### StatusBar module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-statusbar.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-statusbar.png)
 
 Adds a status bar to the bottom of the window.
 
@@ -502,7 +571,7 @@ Adds a status bar to the bottom of the window.
 
 #### NuGet package
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 #### Dependencies
 
@@ -519,14 +588,14 @@ statusBar.AddItem("Col 79", new GridLength(100));
 
 ### ToolBars module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-toolbars.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-toolbars.png)
 
 Adds a toolbar tray to the top of the window. By default, the toolbar tray is hidden - use
 `Shell.ToolBars.Visible = true` to show it.
 
 #### NuGet package
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 #### Dependencies
 
@@ -560,11 +629,11 @@ Shell.ToolBars.Visible = true;
 
 ### Toolbox module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-toolbox.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-toolbox.png)
 
 Reproduces the toolbox tool window from Visual Studio. Use the `[ToolboxItem]` attribute to provide
 available items for listing in the toolbox. You specify the document type for each toolbox item.
-When the user switches to a different document, Gemini manages showing only the toolbox items that 
+When the user switches to a different document, SomaFrameQD manages showing only the toolbox items that 
 are supported for the active document type. Items are listed in categories. 
 The toolbox supports drag and drop.
 
@@ -576,7 +645,7 @@ The toolbox supports drag and drop.
 
 #### NuGet package
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 #### Dependencies
 
@@ -592,7 +661,7 @@ public class ImageSource : ElementViewModel
 }
 ```
 
-Handling dropping onto a document (this code is from [`GraphView.xaml.cs`](https://github.com/tgjones/gemini/blob/master/src/Gemini.Demo.FilterDesigner/Modules/FilterDesigner/Views/GraphView.xaml.cs)):
+Handling dropping onto a document (this code is from [`GraphView.xaml.cs`](https://github.com/NTLDR2/SomaFrameQD/blob/master/src/SomaFrameQD.Demo.FilterDesigner/Modules/FilterDesigner/Views/GraphView.xaml.cs)):
 
 ```csharp
 private void OnGraphControlDragEnter(object sender, DragEventArgs e)
@@ -619,7 +688,7 @@ private void OnGraphControlDrop(object sender, DragEventArgs e)
 
 ### UndoRedo module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-undoredo.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-undoredo.png)
 
 Provides a framework for adding undo/redo support to your application. An undo/redo stack is maintained
 separately for each document. The screenshot above shows the history tool window. You can drag the slider
@@ -633,7 +702,7 @@ to move forward or backward in the document's history.
 
 #### NuGet package
 
-* [Gemini](http://nuget.org/packages/GeminiWpf/)
+* [SomaFrameQD](http://nuget.org/packages/SomaFrameQDWpf/)
 
 #### Dependencies
 
@@ -699,7 +768,7 @@ source file.
 
 #### NuGet package
 
-* [Gemini.Modules.CodeCompiler](http://nuget.org/packages/Gemini.Modules.CodeCompiler/)
+* [SomaFrameQD.Modules.CodeCompiler](http://nuget.org/packages/SomaFrameQD.Modules.CodeCompiler/)
 
 #### Dependencies
 
@@ -707,7 +776,7 @@ source file.
 
 #### Usage
 
-This example is from [HelixViewModel](https://github.com/tgjones/gemini/blob/master/src/Gemini.Demo/Modules/Home/ViewModels/HelixViewModel.cs) in one of the sample applications.
+This example is from [HelixViewModel](https://github.com/NTLDR2/SomaFrameQD/blob/master/src/SomaFrameQD.Demo/Modules/Home/ViewModels/HelixViewModel.cs) in one of the sample applications.
 
 ```csharp
 var newAssembly = _codeCompiler.Compile(
@@ -721,14 +790,14 @@ var newAssembly = _codeCompiler.Compile(
         new MetadataFileReference(typeof(AppBootstrapper).Assembly.Location),
         new MetadataFileReference(GetType().Assembly.Location)
     },
-    "GeminiDemoScript");
+    "SomaFrameQDDemoScript");
 ```
 
 Once there are no references to `newAssembly`, it will be eligible for garbage collection.
 
 ### CodeEditor module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-codeeditor.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-codeeditor.png)
 
 Uses AvalonEdit to provide syntax highlighting and other features for editing C# source files.
 
@@ -739,7 +808,7 @@ Uses AvalonEdit to provide syntax highlighting and other features for editing C#
 
 #### NuGet package
 
-* [Gemini.Modules.CodeEditor](http://nuget.org/packages/Gemini.Modules.CodeEditor/)
+* [SomaFrameQD.Modules.CodeEditor](http://nuget.org/packages/SomaFrameQD.Modules.CodeEditor/)
 
 #### Dependencies
 
@@ -756,7 +825,7 @@ the document. You can also use the `CodeEditor` control in your own views:
 
 ### ErrorList module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-errorlist.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-errorlist.png)
 
 Reproduces the error list tool window from Visual Studio. Can be used to show errors, warning, or information.
 
@@ -766,7 +835,7 @@ Reproduces the error list tool window from Visual Studio. Can be used to show er
 
 #### NuGet package
 
-* [Gemini.Modules.ErrorList](http://nuget.org/packages/Gemini.Modules.ErrorList/)
+* [SomaFrameQD.Modules.ErrorList](http://nuget.org/packages/SomaFrameQD.Modules.ErrorList/)
 
 #### Dependencies
 
@@ -804,7 +873,7 @@ errorList.AddItem(
 
 ### GraphEditor module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-grapheditor.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-grapheditor.png)
 
 Implements a general purpose graph / node editing UI. This module provides the UI controls - the logic
 and view models are usually specific to your application, and are left to you. The FilterDesigner sample
@@ -822,7 +891,7 @@ from Ashley Davis's [CodeProject article](http://www.codeproject.com/Articles/18
 
 #### NuGet package
 
-* [Gemini.Modules.GraphEditor](http://nuget.org/packages/Gemini.Modules.GraphEditor/)
+* [SomaFrameQD.Modules.GraphEditor](http://nuget.org/packages/SomaFrameQD.Modules.GraphEditor/)
 
 #### Dependencies
 
@@ -838,12 +907,12 @@ You'll need to create view models to represent:
 * connections.
 
 I suggest looking at the 
-[FilterDesigner sample application](https://github.com/tgjones/gemini/tree/master/src/Gemini.Demo.FilterDesigner)
+[FilterDesigner sample application](https://github.com/NTLDR2/SomaFrameQD/tree/master/src/SomaFrameQD.Demo.FilterDesigner)
 to get an idea of what's involved.
 
 ### Inspector module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-inspector.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-inspector.png)
 
 Similar in purpose to the property grid, but the Inspector module takes a more flexible approach.
 Instead of the strict "two-column / property per row" layout used in the standard PropertyGrid,
@@ -867,7 +936,7 @@ It comes with the following editors:
 
 #### NuGet package
 
-* [Gemini.Modules.Inspector](http://nuget.org/packages/Gemini.Modules.Inspector/)
+* [SomaFrameQD.Modules.Inspector](http://nuget.org/packages/SomaFrameQD.Modules.Inspector/)
 
 #### Dependencies
 
@@ -894,7 +963,7 @@ inspectorTool.SelectedObject = new InspectableObjectBuilder()
 
 ### Output module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-output.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-output.png)
 
 Much like the output tool window from Visual Studio.
 
@@ -904,7 +973,7 @@ Much like the output tool window from Visual Studio.
 
 #### NuGet package
 
-* [Gemini.Modules.Output](http://nuget.org/packages/Gemini.Modules.Output/)
+* [SomaFrameQD.Modules.Output](http://nuget.org/packages/SomaFrameQD.Modules.Output/)
 
 #### Dependencies
 
@@ -919,7 +988,7 @@ output.AppendLine("Started up");
 
 ### PropertyGrid module
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-module-propertygrid.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-module-propertygrid.png)
 
 Pretty much does what it says on the tin. It uses the PropertyGrid control from the
 Extended WPF Toolkit.
@@ -930,7 +999,7 @@ Extended WPF Toolkit.
 
 #### NuGet package
 
-* [Gemini.Modules.PropertyGrid](http://nuget.org/packages/Gemini.Modules.PropertyGrid/)
+* [SomaFrameQD.Modules.PropertyGrid](http://nuget.org/packages/SomaFrameQD.Modules.PropertyGrid/)
 
 #### Dependencies
 
@@ -945,18 +1014,18 @@ propertyGrid.SelectedObject = myObject;
 
 ## Sample application
 
-Gemini.Demo showcases many of the available modules. The screenshot below shows the interactive script editor in action -
+SomaFrameQD.Demo showcases many of the available modules. The screenshot below shows the interactive script editor in action -
 as you type, the code will be compiled in real-time into a dynamic assembly and then executed in the same AppDomain.
 
 It also includes a very basic example of a filter designer, built on the GraphEditor module.
 
-* [Source code](https://raw.github.com/tgjones/gemini/master/src/Gemini.Demo)
+* [Source code](https://github.com/NTLDR2/SomaFrameQD/tree/master/src/SomaFrameQD.Demo)
 
-![Screenshot](https://raw.github.com/tgjones/gemini/master/doc/gemini-demo.png)
+![Screenshot](https://raw.githubusercontent.com/NTLDR2/SomaFrameQD/master/doc/SomaFrameQD-demo.png)
 
-## What projects use Gemini?
+## What projects use SomaFrameQD?
 
-I've used Gemini on several of my own projects:
+I've used SomaFrameQD on several of my own projects:
 
 * [Meshellator](http://github.com/tgjones/meshellator)
 * [Rasterizr](http://github.com/tgjones/rasterizr)
@@ -970,7 +1039,7 @@ I've used Gemini on several of my own projects:
   his code to integrate better with AvalonDock 2.0, which natively supports MVVM-style binding.
 * I used the VS2010 theme from [Edi](http://edi.codeplex.com/).
 
-Gemini is not the only WPF framework for building IDE-like applications. Here are some others:
+SomaFrameQD is not the only WPF framework for building IDE-like applications. Here are some others:
 
 * [SoapBox Core](http://soapboxautomation.com/products/soapbox-core-2/) - source [here](http://svn.soapboxcore.com/svn/),
   but I think this project might be dead.

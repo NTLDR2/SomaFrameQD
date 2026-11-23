@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Validates the Gemini demo build outputs and NuGet package family.
+Validates the SomaFrameQD demo build outputs and NuGet package family.
 
 .DESCRIPTION
 This script is the package-contract gate used after the solution is built and
@@ -16,7 +16,7 @@ reading the validation implementation. The script verifies:
 - every primary package contains one assembly for each retained framework;
 - nuspec dependency groups and target-specific dependency versions match the
   declared contract;
-- all internal Gemini dependencies use the same NBGV-calculated version; and
+- all internal SomaFrameQD dependencies use the same NBGV-calculated version; and
 - every symbol package contains the matching portable PDBs; and
 - a package-only external host restores, builds, and runs against the expected
   Caliburn and CodeEditor dependency graphs, framework-specific dependencies,
@@ -31,8 +31,8 @@ Directory containing the `.nupkg` and `.snupkg` files. Defaults to
 `build\packages` under the repository root.
 
 .PARAMETER DemoOutputPath
-Directory containing the Release output for Gemini.Demo. Defaults to
-`src\Gemini.Demo\bin\Release` under the repository root.
+Directory containing the Release output for SomaFrameQD.Demo. Defaults to
+`src\SomaFrameQD.Demo\bin\Release` under the repository root.
 
 .PARAMETER ContractPath
 Path to the declarative package contract. Defaults to
@@ -65,7 +65,7 @@ if ([string]::IsNullOrWhiteSpace($PackagePath)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($DemoOutputPath)) {
-    $DemoOutputPath = Join-Path $repositoryRoot 'src\Gemini.Demo\bin\Release'
+    $DemoOutputPath = Join-Path $repositoryRoot 'src\SomaFrameQD.Demo\bin\Release'
 }
 
 if ([string]::IsNullOrWhiteSpace($ContractPath)) {
@@ -210,6 +210,7 @@ foreach ($framework in $expectedFrameworks) {
 }
 
 Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $packages = @(
     Get-ChildItem -LiteralPath $PackagePath -File |
@@ -250,11 +251,28 @@ foreach ($package in $packages) {
         $definition = $expectedPackages[$packageId]
         $entryNames = @($archive.Entries | ForEach-Object FullName)
 
-        foreach ($framework in $expectedFrameworks) {
-            $assemblyPath = "lib/$($framework.asset)/$($definition.assembly).dll"
-            Assert-Condition -Condition ($assemblyPath -in $entryNames) `
-                -Message "$packageId is missing $assemblyPath."
-        }
+        $expectedLibFrameworks = @($expectedFrameworks | ForEach-Object asset)
+        $actualLibFrameworks = @(
+            $entryNames |
+                Where-Object { $_ -match '^lib/[^/]+/' } |
+                ForEach-Object { ($_ -split '/')[1] } |
+                Sort-Object -Unique
+        )
+        Assert-SetEqual `
+            -Expected $expectedLibFrameworks `
+            -Actual $actualLibFrameworks `
+            -Description "$packageId lib target frameworks"
+
+        $expectedLibEntries = @(
+            foreach ($framework in $expectedFrameworks) {
+                "lib/$($framework.asset)/$($definition.assembly).dll"
+            }
+        )
+        $actualLibDllEntries = @($entryNames | Where-Object { $_ -match '^lib/[^/]+/[^/]+\.dll$' })
+        Assert-SetEqual `
+            -Expected $expectedLibEntries `
+            -Actual $actualLibDllEntries `
+            -Description "$packageId lib assemblies"
 
         $groups = @($metadata.dependencies.group)
         $actualGroupFrameworks = @($groups | ForEach-Object { [string] $_.targetFramework })
@@ -288,7 +306,9 @@ foreach ($package in $packages) {
             }
 
             $actualDependencies = @{}
-            foreach ($dependency in @($group.dependency)) {
+            $dependencyProperty = $group.PSObject.Properties['dependency']
+            $groupDependencies = if ($null -ne $dependencyProperty) { @($dependencyProperty.Value) } else { @() }
+            foreach ($dependency in $groupDependencies) {
                 $dependencyId = [string] $dependency.id
                 Assert-Condition -Condition (-not $actualDependencies.ContainsKey($dependencyId)) `
                     -Message "$packageId has duplicate dependency '$dependencyId' in $($group.targetFramework)."
@@ -317,11 +337,16 @@ foreach ($package in $packages) {
     $symbolArchive = [System.IO.Compression.ZipFile]::OpenRead($symbolPackagePath)
     try {
         $symbolEntries = @($symbolArchive.Entries | ForEach-Object FullName)
-        foreach ($framework in $expectedFrameworks) {
-            $pdbPath = "lib/$($framework.asset)/$($definition.assembly).pdb"
-            Assert-Condition -Condition ($pdbPath -in $symbolEntries) `
-                -Message "$packageId symbol package is missing $pdbPath."
-        }
+        $expectedPdbEntries = @(
+            foreach ($framework in $expectedFrameworks) {
+                "lib/$($framework.asset)/$($definition.assembly).pdb"
+            }
+        )
+        $actualLibPdbEntries = @($symbolEntries | Where-Object { $_ -like 'lib/*.pdb' })
+        Assert-SetEqual `
+            -Expected $expectedPdbEntries `
+            -Actual $actualLibPdbEntries `
+            -Description "$packageId symbol PDBs"
     }
     finally {
         $symbolArchive.Dispose()
@@ -340,9 +365,9 @@ Assert-Condition -Condition ($distinctVersions.Count -eq 1) `
 $packageVersion = $distinctVersions[0]
 $nuGetConfigPath = Join-Path $repositoryRoot 'src\NuGet.config'
 $compatibilityProjectDirectory = Split-Path -Parent $CompatibilityProjectPath
-$geminiPackagePath = Join-Path $PackagePath "GeminiWpf.$packageVersion.nupkg"
-Assert-Condition -Condition (Test-Path -LiteralPath $geminiPackagePath -PathType Leaf) `
-    -Message "Gemini package does not exist: $geminiPackagePath"
+$SomaFrameQDPackagePath = Join-Path $PackagePath "SomaFrameQDWpf.$packageVersion.nupkg"
+Assert-Condition -Condition (Test-Path -LiteralPath $SomaFrameQDPackagePath -PathType Leaf) `
+    -Message "SomaFrameQD package does not exist: $SomaFrameQDPackagePath"
 
 # Key validation restores by the complete package-family content. Distinct
 # working-tree payloads can share IDs and versions, so every primary package
@@ -374,7 +399,7 @@ Invoke-DotNet `
         $nuGetConfigPath,
         "-p:RestoreAdditionalProjectSources=$PackagePath",
         "-p:RestorePackagesPath=$compatibilityPackagesPath",
-        "-p:GeminiPackageVersion=$packageVersion"
+        "-p:SomaFrameQDPackageVersion=$packageVersion"
     )
 
 $assetsPath = Join-Path $compatibilityProjectDirectory 'obj\project.assets.json'
@@ -382,10 +407,17 @@ Assert-Condition -Condition (Test-Path -LiteralPath $assetsPath -PathType Leaf) 
     -Message "Compatibility restore did not create $assetsPath."
 
 $assets = Get-Content -LiteralPath $assetsPath -Raw | ConvertFrom-Json
+$actualAssetTargets = @($assets.targets.PSObject.Properties.Name | Where-Object { $_ -notlike '*/*' })
+Assert-Condition -Condition ($actualAssetTargets.Count -eq $expectedFrameworks.Count) `
+    -Message "Expected $($expectedFrameworks.Count) RID-less target(s) in $assetsPath, found $($actualAssetTargets.Count): [$($actualAssetTargets -join ', ')]."
+
 foreach ($framework in $expectedFrameworks) {
     $targetProperty = $assets.targets.PSObject.Properties[$framework.lockFileTarget]
+    if ($null -eq $targetProperty -and $framework.lockFileTarget -ne $framework.build) {
+        $targetProperty = $assets.targets.PSObject.Properties[$framework.build]
+    }
     Assert-Condition -Condition ($null -ne $targetProperty) `
-        -Message "Compatibility assets are missing target '$($framework.lockFileTarget)'."
+        -Message "Compatibility assets are missing target '$($framework.lockFileTarget)' (available: [$($actualAssetTargets -join ', ')])."
 
     $resolvedPackages = @($targetProperty.Value.PSObject.Properties.Name)
 
@@ -453,7 +485,7 @@ foreach ($framework in $expectedFrameworks) {
             $framework.build,
             '--no-restore',
             "-p:RestorePackagesPath=$compatibilityPackagesPath",
-            "-p:GeminiPackageVersion=$packageVersion"
+            "-p:SomaFrameQDPackageVersion=$packageVersion"
         )
 }
 

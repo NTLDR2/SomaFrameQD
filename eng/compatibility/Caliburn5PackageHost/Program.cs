@@ -9,10 +9,10 @@ using AvalonDock;
 using AvalonDock.Serializer.Xml;
 using AvalonDock.Themes;
 using Caliburn.Micro;
-using Gemini.Framework;
-using Gemini.Modules.CodeEditor;
-using Gemini.Modules.CodeEditor.Controls;
-using Gemini.Modules.CodeEditor.Views;
+using SomaFrameQD.Framework;
+using SomaFrameQD.Modules.CodeEditor;
+using SomaFrameQD.Modules.CodeEditor.Controls;
+using SomaFrameQD.Modules.CodeEditor.Views;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using Xceed.Wpf.Toolkit;
@@ -102,13 +102,13 @@ namespace Caliburn5PackageHost
                 ItemsSource = new List<string> { "one" },
                 ItemsSourceType = typeof(List<string>)
             };
-            var geminiTheme = new ResourceDictionary
+            var SomaFrameQDTheme = new ResourceDictionary
             {
                 Source = new Uri(
-                    "pack://application:,,,/Gemini;component/Themes/VS2013/LightTheme.xaml")
+                    "pack://application:,,,/SomaFrameQD;component/Themes/VS2013/LightTheme.xaml")
             };
 
-            return typeof(WindowBase).Assembly.GetName().Name == "Gemini"
+            return typeof(WindowBase).Assembly.GetName().Name == "SomaFrameQD"
                 && typeof(Screen).Assembly.GetName().Name == "Caliburn.Micro.Core"
                 && typeof(BootstrapperBase).Assembly.GetName().Name == "Caliburn.Micro.Platform"
                 && avalonEditAssemblyName.Name == "ICSharpCode.AvalonEdit"
@@ -124,7 +124,7 @@ namespace Caliburn5PackageHost
                 && colorPicker.SelectedColor == System.Windows.Media.Colors.CornflowerBlue
                 && colorCanvas.SelectedColor == System.Windows.Media.Colors.Goldenrod
                 && collectionControl.Items.Count == 1
-                && geminiTheme[typeof(ColorCanvas)] is Style
+                && SomaFrameQDTheme[typeof(ColorCanvas)] is Style
                 && manager.Layout != null
                 && theme["DockAnchorableRight"] is Viewbox
                 ? 0

@@ -42,18 +42,16 @@ jobs:
         run: dotnet --info
 
       - name: Restore
-        run: dotnet restore src\Gemini.sln --configfile src\NuGet.config
+        run: dotnet restore src\SomaFrameQD.sln --configfile src\NuGet.config
 
       - name: Build solution
-        run: dotnet build src\Gemini.sln --configuration Release --no-restore
+        run: dotnet build src\SomaFrameQD.sln --configuration Release --no-restore
 
       - name: Test characterization harness
-        run: |
-          dotnet test --project src\Gemini.Tests\Gemini.Tests.csproj --configuration Release --framework net48 --no-build --no-restore
-          dotnet test --project src\Gemini.Tests\Gemini.Tests.csproj --configuration Release --framework net10.0-windows --no-build --no-restore
+        run: dotnet test src\SomaFrameQD.Tests\SomaFrameQD.Tests.csproj --configuration Release --framework net48 --no-build --no-restore
 
       - name: Pack libraries
-        run: dotnet pack src\Gemini.sln --configuration Release --no-build --no-restore --output build\packages
+        run: dotnet pack src\SomaFrameQD.sln --configuration Release --no-build --no-restore --output build\packages
 
       - name: Validate build and packages
         shell: pwsh
@@ -76,7 +74,7 @@ jobs:
     name: Publish approved upstream release
     needs: build
     if: >-
-      github.repository == 'tgjones/gemini' &&
+      github.repository == 'NTLDR2/SomaFrameQD' &&
       github.event_name == 'push' &&
       (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: windows-2025
